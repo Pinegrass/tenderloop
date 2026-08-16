@@ -47,6 +47,8 @@ A DynamoDB single table uses family-scoped partition keys and records for Family
 
 Raw student chats are ephemeral. AgentCore Memory is short-term only for minor conversations. A durable PreferenceCard is created only after an explicit, child-visible save action and remains editable and deletable.
 
+Health diagnoses and symptom narratives are not agent memory. The preferred data object is a narrow `AccommodationPreference` containing a functional adjustment, audience, purpose, provenance, consent receipt, expiry, and retention rule. Appointment blocks may be stored as unavailable time with a neutral label. Any optional health detail is isolated from ordinary study records, encrypted, excluded from model memory and analytics, and never copied into a caregiver view unless the student and authorized adult explicitly approve a necessary safety instruction.
+
 ## Caregiver Pass
 
 The pass begins as a 256-bit opaque single-use invite. Only its hash is stored. After authentication it binds to one subject, family, student, time window, and narrow scope. The default duration is 24 hours and the maximum is seven days. It is visible to the student and parent, revocable, non-transferable, and cannot extend itself.
@@ -62,6 +64,8 @@ The pass begins as a 256-bit opaque single-use invite. Only its hash is stored. 
 - Lambda-side reauthorization;
 - output validation and audit metadata;
 - specialist-reviewed crisis and trusted-adult handoff policy.
+
+Health-related requests pass through a deterministic boundary classifier before agent generation. The permitted path is plan accommodation or human handoff. Diagnosis, symptom interpretation, medication advice, and treatment recommendations are denied. Urgent language invokes a disclosed, jurisdiction-specific safety flow that offers immediate human help while revealing only the minimum necessary information under the reviewed escalation policy.
 
 Guardrails do not replace authorization and cannot be assumed to inspect every tool argument.
 

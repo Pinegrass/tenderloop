@@ -32,6 +32,8 @@ Next.js will call an authenticated AWS API backed by Cognito, API Gateway and La
 
 All demo data is synthetic. TenderLoop is an AI support tool—not a parent, therapist, diagnostician, or disciplinarian.
 
+Student wellbeing is handled as private, functional study accommodations and human handoffs—not diagnosis, symptom assessment, treatment advice, or mood surveillance. See the health and wellbeing boundary in the [product manifesto](docs/MANIFESTO.md).
+
 ## License
 
 MIT

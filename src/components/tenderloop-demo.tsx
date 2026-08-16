@@ -74,6 +74,13 @@ function AudienceChip({ children, tone = "private" }: { children: React.ReactNod
 }
 
 function StudentView({ onShare }: { onShare: () => void }) {
+  const [studyComfort, setStudyComfort] = useState<"regular" | "low-energy" | "screen-light">("regular");
+  const comfortCopy = {
+    regular: "Keep the 20-minute plan with the usual break pattern.",
+    "low-energy": "Use 10-minute blocks, add a longer break, and move optional work.",
+    "screen-light": "Prefer audio or paper steps and reduce visually dense prompts.",
+  }[studyComfort];
+
   return (
     <div className="grid gap-5 lg:grid-cols-[1.35fr_.85fr]">
       <div className="space-y-5">
@@ -186,6 +193,38 @@ function StudentView({ onShare }: { onShare: () => void }) {
             <div className="flex items-center justify-between gap-3 text-sm"><span>Today’s schedule</span><AudienceChip tone="shared">Family</AudienceChip></div>
             <div className="flex items-center justify-between gap-3 text-sm"><span>Soccer handoff</span><AudienceChip tone="limited">Alex until 9</AudienceChip></div>
             <Button variant="ghost" className="mt-1 w-full justify-between px-0 text-[#265d49]">Review privacy <ChevronRight className="size-4" aria-hidden="true" /></Button>
+          </CardContent>
+        </Card>
+
+        <Card className="border-[#d8d3e1] bg-[#fbf9fd]">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between gap-3">
+              <CardTitle className="text-base">Study comfort</CardTitle>
+              <AudienceChip>Private</AudienceChip>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm leading-6 text-muted-foreground">Adjust the work—not diagnose the reason. You can change this any time.</p>
+            <div className="mt-3 grid gap-2">
+              {[
+                ["regular", "Regular pace"],
+                ["low-energy", "Low-energy pace"],
+                ["screen-light", "Screen-light pace"],
+              ].map(([value, label]) => (
+                <Button
+                  key={value}
+                  size="sm"
+                  variant={studyComfort === value ? "secondary" : "outline"}
+                  className="min-h-10 justify-start rounded-xl bg-white"
+                  onClick={() => setStudyComfort(value as typeof studyComfort)}
+                >
+                  {studyComfort === value ? <Check className="size-4" aria-hidden="true" /> : null}
+                  {label}
+                </Button>
+              ))}
+            </div>
+            <p className="mt-3 rounded-xl bg-white p-3 text-sm leading-6">{comfortCopy}</p>
+            <p className="mt-3 text-xs leading-5 text-muted-foreground">TenderLoop cannot assess symptoms or give medical advice. If something feels medically wrong, pause and contact a trusted adult or health professional.</p>
           </CardContent>
         </Card>
       </aside>

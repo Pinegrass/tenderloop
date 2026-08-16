@@ -42,6 +42,8 @@ TenderLoop will not:
 
 The student owns the study interaction. The coach asks what is hard—starting, understanding, or finding time—then proposes a short plan. Tutoring is Socratic. The student approves plans, reminders, saved preferences, and Help Cards before they become shared family objects.
 
+The student may also choose functional wellbeing accommodations such as low-energy pacing, screen-light work, longer transitions, movement breaks, reduced sensory load, or a pause-and-contact-human action. TenderLoop adapts the plan to the requested accommodation without inferring or requiring a diagnosis.
+
 ### Parent Guide
 
 The parent receives exception-only decision cards and help requests written and approved by the student. The guide suggests a warm, autonomy-supportive response and one practical action. It does not provide a transcript, emotional assessment, or surveillance feed.
@@ -69,6 +71,29 @@ Authorization is deterministic and outside the language model. A verified identi
 Student chats use short-term session memory only. Durable memory is limited to explicit, editable preference cards. Raw prompt bodies and private chats do not enter shared audit logs. Caregiver invites use opaque, single-use, expiring tokens and never expand automatically.
 
 Safety combines deterministic policy, content guardrails, academic-integrity checks, PII controls, typed validation, human handoff, and specialist-reviewed escalation rules. The product never promises secrecy in a crisis and never assumes that the registered guardian is always the safe adult.
+
+## Health and wellbeing boundary
+
+TenderLoop supports health concerns only where they affect safe participation in study and family coordination. It is an accommodation and human-handoff layer, not a medical or mental-health product.
+
+The agent may:
+
+- let a student privately select functional needs such as shorter sessions, screen-light work, reduced reminders, movement breaks, rest, or contacting a trusted person;
+- adapt a study plan around a student-entered appointment or unavailable period without asking for a diagnosis;
+- help the student compose a minimal disclosure such as “I need a lighter plan tonight” or “Please help me contact the school nurse”;
+- surface established emergency instructions created by the family and reviewed by an appropriate professional;
+- provide a prominent route to a trusted adult, school counselor, clinician, emergency service, or jurisdiction-appropriate helpline.
+
+The agent may not:
+
+- diagnose, triage, interpret symptoms, recommend medication, change treatment, or provide reassurance that a condition is harmless;
+- infer depression, anxiety, ADHD, eating disorders, substance use, disability, pain, fatigue, or risk from conversation patterns;
+- create health or mood scores, predict compliance, or use health information to rank a student;
+- disclose a diagnosis or health narrative when a functional accommodation is sufficient;
+- automatically notify the registered parent when that person may be unsafe;
+- substitute engagement with the agent for professional or human support.
+
+Health-related content is sensitive by default, separately consented, minimized, encrypted, access-logged, and retained for the shortest useful period. A student-facing preview must show the exact functional information being shared and must distinguish ordinary accommodation sharing from disclosed safety exceptions.
 
 ## Success
 
