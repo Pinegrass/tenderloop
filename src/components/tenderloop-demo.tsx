@@ -33,6 +33,14 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Role = "student" | "parent" | "caregiver";
+type Difficulty = "starting" | "understanding" | "finding-time";
+
+type CoachPlan = {
+  acknowledgement: string;
+  steps: Array<{ label: string; minutes: number }>;
+  checkInQuestion: string;
+  parentHelpSuggestion: string | null;
+};
 
 const roles: Array<{ id: Role; label: string; person: string }> = [
   { id: "student", label: "Student", person: "Maya" },
@@ -75,11 +83,53 @@ function AudienceChip({ children, tone = "private" }: { children: React.ReactNod
 
 function StudentView({ onShare }: { onShare: () => void }) {
   const [studyComfort, setStudyComfort] = useState<"regular" | "low-energy" | "screen-light">("regular");
+  const [difficulty, setDifficulty] = useState<Difficulty>("starting");
+  const [coachPlan, setCoachPlan] = useState<CoachPlan>({
+    acknowledgement: "Starting can feel like the biggest step. Let’s make the first move very small.",
+    steps: [
+      { label: "Choose one local water source", minutes: 5 },
+      { label: "Find two trustworthy sources", minutes: 10 },
+      { label: "Write three questions to investigate", minutes: 5 },
+    ],
+    checkInQuestion: "Which step would make the rest feel easier once it is done?",
+    parentHelpSuggestion: null,
+  });
+  const [coachEngine, setCoachEngine] = useState<"preview" | "strands">("preview");
+  const [coachLoading, setCoachLoading] = useState(false);
+  const [coachError, setCoachError] = useState<string | null>(null);
   const comfortCopy = {
     regular: "Keep the 20-minute plan with the usual break pattern.",
     "low-energy": "Use 10-minute blocks, add a longer break, and move optional work.",
     "screen-light": "Prefer audio or paper steps and reduce visually dense prompts.",
   }[studyComfort];
+  const totalMinutes = coachPlan.steps.reduce((sum, step) => sum + step.minutes, 0);
+
+  async function createPlan() {
+    setCoachLoading(true);
+    setCoachError(null);
+
+    try {
+      const response = await fetch("/api/coach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          assignment: "Local water quality science project due Friday",
+          difficulty,
+          comfort: studyComfort,
+        }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error ?? "The coach could not create a plan.");
+
+      setCoachPlan(data.plan);
+      setCoachEngine(data.engine === "strands" ? "strands" : "preview");
+    } catch (error) {
+      setCoachError(error instanceof Error ? error.message : "The coach could not create a plan.");
+    } finally {
+      setCoachLoading(false);
+    }
+  }
 
   return (
     <div className="grid gap-5 lg:grid-cols-[1.35fr_.85fr]">
@@ -104,13 +154,32 @@ function StudentView({ onShare }: { onShare: () => void }) {
               <div className="flex gap-3">
                 <Sparkles className="mt-0.5 size-5 shrink-0 text-[#3a745d]" aria-hidden="true" />
                 <div>
-                  <p className="font-semibold">What feels hardest right now?</p>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="font-semibold">What feels hardest right now?</p>
+                    <Badge variant="outline" className="rounded-full bg-white text-[11px]">
+                      {coachEngine === "strands" ? "Strands agent" : "Safe preview"}
+                    </Badge>
+                  </div>
                   <p className="mt-1 text-sm leading-6 text-muted-foreground">Starting, understanding the research, or finding time?</p>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <Button size="sm" className="rounded-full">Starting</Button>
-                    <Button size="sm" variant="outline" className="rounded-full bg-white">Research</Button>
-                    <Button size="sm" variant="outline" className="rounded-full bg-white">Finding time</Button>
+                    {[
+                      ["starting", "Starting"],
+                      ["understanding", "Understanding"],
+                      ["finding-time", "Finding time"],
+                    ].map(([value, label]) => (
+                      <Button
+                        key={value}
+                        size="sm"
+                        variant={difficulty === value ? "default" : "outline"}
+                        className="rounded-full bg-white data-[active=true]:bg-[#265d49]"
+                        data-active={difficulty === value}
+                        onClick={() => setDifficulty(value as Difficulty)}
+                      >
+                        {label}
+                      </Button>
+                    ))}
                   </div>
+                  <p className="mt-3 text-sm leading-6 text-[#315f4d]" aria-live="polite">{coachPlan.acknowledgement}</p>
                 </div>
               </div>
             </div>
@@ -121,24 +190,27 @@ function StudentView({ onShare }: { onShare: () => void }) {
                   <p className="text-sm font-semibold">A small plan for today</p>
                   <p className="text-sm text-muted-foreground">You can change any step before it is saved.</p>
                 </div>
-                <span className="text-xs font-semibold text-[#3a745d]">20 min total</span>
+                <span className="text-xs font-semibold text-[#3a745d]">{totalMinutes} min total</span>
               </div>
               <div className="space-y-2">
-                {[
-                  ["1", "Choose one local water source", "5 min"],
-                  ["2", "Find two trustworthy sources", "10 min"],
-                  ["3", "Write three questions to investigate", "5 min"],
-                ].map(([number, task, time], index) => (
-                  <div key={number} className={`flex items-center gap-3 rounded-xl border p-3 ${index === 0 ? "border-[#a9c4b5] bg-[#f7fbf8]" : "bg-white"}`}>
-                    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#e6eee9] text-xs font-bold text-[#265d49]">{number}</span>
-                    <span className="min-w-0 flex-1 text-sm font-medium">{task}</span>
-                    <span className="text-xs text-muted-foreground">{time}</span>
+                {coachPlan.steps.map((step, index) => (
+                  <div key={`${step.label}-${index}`} className={`flex items-center gap-3 rounded-xl border p-3 ${index === 0 ? "border-[#a9c4b5] bg-[#f7fbf8]" : "bg-white"}`}>
+                    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#e6eee9] text-xs font-bold text-[#265d49]">{index + 1}</span>
+                    <span className="min-w-0 flex-1 text-sm font-medium">{step.label}</span>
+                    <span className="text-xs text-muted-foreground">{step.minutes} min</span>
                   </div>
                 ))}
               </div>
+              <p className="mt-3 text-sm text-muted-foreground">{coachPlan.checkInQuestion}</p>
+              {coachError ? <p className="mt-3 text-sm font-medium text-red-700" role="alert">{coachError}</p> : null}
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                 <AudienceChip>Private until you share</AudienceChip>
-                <Button className="rounded-full">Start the first step <ArrowRight className="size-4" aria-hidden="true" /></Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" className="rounded-full bg-white" onClick={createPlan} disabled={coachLoading}>
+                    {coachLoading ? "Planning…" : "Create my plan"}
+                  </Button>
+                  <Button className="rounded-full">Start the first step <ArrowRight className="size-4" aria-hidden="true" /></Button>
+                </div>
               </div>
             </div>
           </CardContent>
