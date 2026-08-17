@@ -2,6 +2,8 @@
 
 **From nagging to navigating.** A caring family coordination agent that helps students study, parents support, and trusted caregivers act—without surveillance.
 
+![TenderLoop project cover](media/tenderloop-cover.png)
+
 TenderLoop is our entry for Amazon’s Agents for Humans hackathon, in the **Everyday Agents** track. Its defining boundary is simple: student conversations remain private; only explicit, previewed objects such as study plans, Help Cards, schedule items, and temporary Caregiver Passes cross roles.
 
 ## Current prototype
@@ -25,6 +27,7 @@ Then open `http://localhost:3000`.
 
 - [Product manifesto](docs/MANIFESTO.md)
 - [Architecture and security contract](docs/ARCHITECTURE.md)
+- [Devpost media package](media/MEDIA_PLAN.md)
 
 ## Planned AWS implementation
 

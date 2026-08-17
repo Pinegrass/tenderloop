@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">TenderLoop logo</title>
+  <desc id="desc">Two caring arcs form a continuous bridge around a protected center.</desc>
+  <rect width="1024" height="1024" rx="252" fill="#265D49"/>
+  <path d="M235 557c38-147 151-242 277-242 102 0 190 61 234 151" fill="none" stroke="#FFFDF8" stroke-width="78" stroke-linecap="round"/>
+  <path d="M789 467c-38 147-151 242-277 242-102 0-190-61-234-151" fill="none" stroke="#E9C9B6" stroke-width="78" stroke-linecap="round"/>
+  <circle cx="512" cy="512" r="88" fill="#FFFDF8"/>
+  <path d="M512 465c-31-36-91-10-78 38 10 37 78 78 78 78s68-41 78-78c13-48-47-74-78-38Z" fill="#265D49"/>
+</svg>

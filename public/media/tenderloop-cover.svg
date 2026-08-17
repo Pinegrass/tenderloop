@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">TenderLoop — from nagging to navigating</title>
+  <desc id="desc">A student-centered family study coordination agent that preserves privacy.</desc>
+  <defs>
+    <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#F7F1E6"/>
+      <stop offset="0.39" stop-color="#F7F1E6" stop-opacity="0.97"/>
+      <stop offset="0.61" stop-color="#F7F1E6" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#F7F1E6" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="14" stdDeviation="22" flood-color="#203A30" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="980" height="900" fill="url(#fade)"/>
+  <g transform="translate(105 92)">
+    <g filter="url(#shadow)">
+      <rect width="72" height="72" rx="20" fill="#265D49"/>
+      <path d="M18 39c3-11 12-19 22-19 8 0 15 5 18 12M54 33c-3 11-12 19-22 19-8 0-15-5-18-12" fill="none" stroke="#FFFDF8" stroke-width="5.5" stroke-linecap="round"/>
+      <circle cx="36" cy="36" r="6.5" fill="#E9C9B6"/>
+    </g>
+    <text x="93" y="31" fill="#18231F" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" letter-spacing="-.5">TenderLoop</text>
+    <text x="93" y="57" fill="#5F6E67" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="500">STUDENT-FIRST FAMILY COORDINATION</text>
+  </g>
+  <g transform="translate(105 268)">
+    <rect width="312" height="38" rx="19" fill="#E5EEE8" stroke="#BFD0C6"/>
+    <text x="156" y="25" text-anchor="middle" fill="#265D49" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" letter-spacing="1.2">EVERYDAY AGENTS</text>
+    <text x="0" y="132" fill="#18231F" font-family="Arial, Helvetica, sans-serif" font-size="78" font-weight="700" letter-spacing="-3">From nagging</text>
+    <text x="0" y="214" fill="#18231F" font-family="Arial, Helvetica, sans-serif" font-size="78" font-weight="700" letter-spacing="-3">to navigating.</text>
+    <text x="3" y="272" fill="#46564F" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="400">Plans that students approve.</text>
+    <text x="3" y="309" fill="#46564F" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="400">Support that families can act on.</text>
+    <text x="3" y="346" fill="#46564F" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="400">Privacy everyone can understand.</text>
+  </g>
+  <g transform="translate(105 750)">
+    <rect width="435" height="56" rx="28" fill="#FFFDF8" stroke="#D8D2C7"/>
+    <circle cx="32" cy="28" r="8" fill="#265D49"/>
+    <text x="54" y="35" fill="#263A32" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="600">Strands Agents + Amazon Bedrock AgentCore</text>
+  </g>
+</svg>
