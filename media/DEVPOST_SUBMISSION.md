@@ -31,6 +31,8 @@ Every shared object answers six questions: who can see it, what they see, why it
 
 The current repository contains a working Next.js 16 and React 19 interactive vertical slice, a shadcn/Radix component system, synthetic family and school data, a documented consent model, and a production-oriented AWS architecture contract.
 
+The Student Coach is implemented behind a server-only API route with the official TypeScript **Strands Agents SDK**. It uses a validated `build_study_plan` tool, structured output, a three-turn execution limit, and a student-safety system prompt. When Bedrock credentials are unavailable, the UI identifies its deterministic fallback as **Safe preview** rather than pretending that an LLM ran.
+
 The AWS implementation is designed around:
 
 - **Strands Agents** for separately bounded Student Coach and Parent Guide roles;
@@ -44,7 +46,7 @@ The AWS implementation is designed around:
 
 The language model is never the authority. It may draft a plan, Help Card, reminder, or response; deterministic policy and a human approval artifact decide whether a consequential tool can execute.
 
-At this stage, the public repository’s working implementation is the interactive frontend vertical slice. The Strands/AgentCore runtime and AWS persistence layer shown in the architecture diagram are the next implementation milestone and will be identified as complete only when their code and deployment evidence are present in the repository.
+At this stage, the public repository’s working implementation includes the interactive frontend, the bounded Strands Student Coach, and the complete local consent-mediated Help Card handoff. AgentCore hosting and the AWS persistence layer shown in the architecture diagram remain deployment milestones and will be identified as complete only when deployment evidence is present in the repository.
 
 ## Challenges we ran into
 
@@ -76,10 +78,10 @@ We also learned that multi-agent architecture is not automatically better. Tende
 
 ## What’s next for TenderLoop
 
-1. Implement the assignment-to-approved-plan Strands vertical slice.
+1. Run and capture the first Bedrock-backed Strands execution.
 2. Deploy the bounded runtime on Amazon Bedrock AgentCore.
 3. Add DynamoDB consent artifacts and Cedar-enforced typed tools.
-4. Implement Help Card publication, parent response, and expiring Caregiver Pass flows end to end.
+4. Connect the verified local Help Card flow to the AWS persistence layer.
 5. Add privacy, role-escalation, prompt-injection, academic-integrity, and safety red-team tests.
 6. Complete specialist review before enabling any health or crisis-related production flow.
 
