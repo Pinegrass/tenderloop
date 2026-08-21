@@ -16,7 +16,7 @@ Last verified: 2026-08-21 (India Standard Time)
 ## Blocked on account activation
 
 - A payment method has been added, but Amazon Bedrock still redirects to **Complete your account setup**.
-- AWS currently routes the account to the KYC stage. The account owner must finish identity verification, support-plan selection, and any requested email follow-up.
+- Payment and customer authentication have been completed, but a direct Bedrock access test still redirects to AWS's account-activation gate. AWS account details and Regions now load normally, indicating that service activation is still propagating or the account remains on the limited free plan.
 - AWS notes that full service activation can take up to 24 hours after registration is completed.
 
 ## Pending after activation
