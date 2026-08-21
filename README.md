@@ -20,6 +20,10 @@ The Student view now calls a server-only `/api/coach` route backed by the offici
 When Bedrock credentials are absent, the same endpoint returns a clearly labelled
 deterministic preview so the interface remains testable without pretending an LLM ran.
 
+The family consent loop is interactive end to end: Daniel sees no request before
+Maya approves a Help Card, receives only its exact shared text afterward, and can
+record a bounded response in a family activity log that excludes Maya's raw chat.
+
 Run it locally:
 
 ```bash

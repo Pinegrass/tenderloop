@@ -34,6 +34,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Role = "student" | "parent" | "caregiver";
 type Difficulty = "starting" | "understanding" | "finding-time";
+type HelpCardStatus = "private" | "sent" | "accepted";
 
 type CoachPlan = {
   acknowledgement: string;
@@ -304,7 +305,32 @@ function StudentView({ onShare }: { onShare: () => void }) {
   );
 }
 
-function ParentView() {
+function ParentView({ helpCardStatus, onAccept }: { helpCardStatus: HelpCardStatus; onAccept: () => void }) {
+  if (helpCardStatus === "private") {
+    return (
+      <div className="grid gap-5 lg:grid-cols-[1.15fr_.85fr]">
+        <Card className="paper-shadow border-0">
+          <CardContent className="grid min-h-72 place-items-center p-8 text-center">
+            <div className="max-w-md">
+              <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#edf4ef] text-[#265d49]"><LockKeyhole className="size-5" /></div>
+              <h2 className="mt-4 text-xl font-semibold">No help request has been shared</h2>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">Maya’s study space remains private. A bounded Help Card will appear here only after she approves its exact wording.</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle className="text-base">What you can see</CardTitle></CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <p className="flex items-center gap-2"><Check className="size-4 text-[#347259]" /> Agreed task status</p>
+            <p className="flex items-center gap-2"><Check className="size-4 text-[#347259]" /> Help Cards Maya sends</p>
+            <p className="flex items-center gap-2"><Check className="size-4 text-[#347259]" /> Shared schedule</p>
+            <p className="flex items-center gap-2 text-muted-foreground"><LockKeyhole className="size-4" /> No raw chats or mood scores</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-5 lg:grid-cols-[1.15fr_.85fr]">
       <Card className="paper-shadow border-0">
@@ -321,10 +347,11 @@ function ParentView() {
             <p className="mt-2 text-sm leading-6">Keep the answer warm and concrete: confirm the time, bring your laptop, and let Maya lead the questions.</p>
           </div>
           <div className="grid gap-2 sm:grid-cols-3">
-            <Button className="rounded-full"><Check className="size-4" aria-hidden="true" /> I can help</Button>
+            <Button className="rounded-full" onClick={onAccept} disabled={helpCardStatus === "accepted"}><Check className="size-4" aria-hidden="true" /> {helpCardStatus === "accepted" ? "Help confirmed" : "I can help"}</Button>
             <Button variant="outline" className="rounded-full">Suggest 8:00</Button>
             <Button variant="ghost" className="rounded-full">Not tonight</Button>
           </div>
+          {helpCardStatus === "accepted" ? <p className="rounded-xl bg-[#edf4ef] p-3 text-sm font-medium text-[#265d49]" aria-live="polite">Daniel confirmed 7:30 PM. This decision—not Maya’s private chat—was added to the family activity log.</p> : null}
           <p className="flex items-center gap-2 text-xs text-muted-foreground"><LockKeyhole className="size-3.5" aria-hidden="true" /> Maya’s conversation, drafts, and feelings were not shared.</p>
         </CardContent>
       </Card>
@@ -384,7 +411,7 @@ function CaregiverView() {
   );
 }
 
-function HelpCardDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+function HelpCardDialog({ open, onOpenChange, onSend }: { open: boolean; onOpenChange: (open: boolean) => void; onSend: () => void }) {
   const [sent, setSent] = useState(false);
 
   function handleOpenChange(nextOpen: boolean) {
@@ -421,7 +448,7 @@ function HelpCardDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (
             </div>
             <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
               <Button variant="ghost" onClick={() => handleOpenChange(false)} className="rounded-full">Keep private</Button>
-              <Button onClick={() => setSent(true)} className="rounded-full">Share this Help Card <ArrowRight className="size-4" /></Button>
+              <Button onClick={() => { onSend(); setSent(true); }} className="rounded-full">Share this Help Card <ArrowRight className="size-4" /></Button>
             </div>
           </>
         )}
@@ -430,10 +457,48 @@ function HelpCardDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (
   );
 }
 
+function ActivityLogDialog({ open, onOpenChange, helpCardStatus }: { open: boolean; onOpenChange: (open: boolean) => void; helpCardStatus: HelpCardStatus }) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-xl bg-[#fffdf8]">
+        <DialogHeader>
+          <DialogTitle className="text-2xl">Family activity log</DialogTitle>
+          <DialogDescription>Shared actions are visible. Private student conversation content is never recorded here.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3 py-2">
+          <div className="rounded-xl border bg-white p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">4:02 PM · Student Coach</p>
+            <p className="mt-1 text-sm">Drafted a three-step science plan for Maya. No external action taken.</p>
+          </div>
+          {helpCardStatus !== "private" ? (
+            <div className="rounded-xl border border-[#ead9cd] bg-[#fff8f2] p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#81533d]">4:06 PM · Maya approved</p>
+              <p className="mt-1 text-sm">Shared one Help Card with Daniel. Raw chat and comfort preference remained private.</p>
+            </div>
+          ) : null}
+          {helpCardStatus === "accepted" ? (
+            <div className="rounded-xl border border-[#d9e3dc] bg-[#f2f7f3] p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#3d715d]">4:08 PM · Daniel confirmed</p>
+              <p className="mt-1 text-sm">Accepted a ten-minute source-finding assist at 7:30 PM.</p>
+            </div>
+          ) : null}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function TenderLoopDemo() {
   const [role, setRole] = useState<Role>("student");
   const [helpOpen, setHelpOpen] = useState(false);
+  const [activityOpen, setActivityOpen] = useState(false);
+  const [helpCardStatus, setHelpCardStatus] = useState<HelpCardStatus>("private");
   const copy = roleCopy[role];
+  const activityCopy = helpCardStatus === "accepted"
+    ? "Daniel confirmed Maya’s approved Help Card for 7:30 PM. No private chat was shared."
+    : helpCardStatus === "sent"
+      ? "Maya shared one approved Help Card with Daniel. Her study conversation remains private."
+      : "Drafted a plan from Maya’s assignment and family calendar. No action taken without approval.";
 
   return (
     <main className="min-h-screen">
@@ -467,17 +532,18 @@ export function TenderLoopDemo() {
 
         <div className="mb-5 flex items-center gap-3 rounded-xl border border-[#d5ded8] bg-[#f7faf8] px-4 py-3 text-sm">
           <Sparkles className="size-4 shrink-0 text-[#347259]" aria-hidden="true" />
-          <p><span className="font-semibold">Agent activity:</span> Drafted a plan from Maya’s assignment and family calendar. No action taken without approval.</p>
+          <p><span className="font-semibold">Agent activity:</span> {activityCopy}</p>
         </div>
 
-        {role === "student" ? <StudentView onShare={() => setHelpOpen(true)} /> : role === "parent" ? <ParentView /> : <CaregiverView />}
+        {role === "student" ? <StudentView onShare={() => setHelpOpen(true)} /> : role === "parent" ? <ParentView helpCardStatus={helpCardStatus} onAccept={() => setHelpCardStatus("accepted")} /> : <CaregiverView />}
 
         <footer className="mt-8 flex flex-col justify-between gap-3 border-t pt-5 text-xs text-muted-foreground sm:flex-row">
           <p>TenderLoop is an AI tool, not a parent, tutor, therapist, or person.</p>
-          <div className="flex gap-4"><button className="min-h-11 hover:text-foreground">Privacy agreement</button><button className="min-h-11 hover:text-foreground">Activity log</button><button className="min-h-11 hover:text-foreground">Get human help</button></div>
+          <div className="flex gap-4"><button className="min-h-11 hover:text-foreground">Privacy agreement</button><button className="min-h-11 hover:text-foreground" onClick={() => setActivityOpen(true)}>Activity log</button><button className="min-h-11 hover:text-foreground">Get human help</button></div>
         </footer>
       </div>
-      <HelpCardDialog open={helpOpen} onOpenChange={setHelpOpen} />
+      <HelpCardDialog open={helpOpen} onOpenChange={setHelpOpen} onSend={() => setHelpCardStatus("sent")} />
+      <ActivityLogDialog open={activityOpen} onOpenChange={setActivityOpen} helpCardStatus={helpCardStatus} />
     </main>
   );
 }
