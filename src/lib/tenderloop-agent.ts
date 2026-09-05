@@ -1,6 +1,6 @@
 import "server-only";
 
-import { Agent, tool } from "@strands-agents/sdk";
+import { Agent, BedrockModel, tool } from "@strands-agents/sdk";
 import { z } from "zod";
 
 export const CoachRequestSchema = z.object({
@@ -67,15 +67,16 @@ const buildStudyPlan = tool({
   callback: buildPreviewPlan,
 });
 
-function hasBedrockCredentials() {
+function shouldUseBedrock() {
   return Boolean(
-    process.env.AWS_BEARER_TOKEN_BEDROCK ||
+    process.env.TENDERLOOP_USE_BEDROCK === "true" ||
+      process.env.AWS_BEARER_TOKEN_BEDROCK ||
       (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY),
   );
 }
 
 export async function runStudentCoach(input: CoachRequest) {
-  if (!hasBedrockCredentials()) {
+  if (!shouldUseBedrock()) {
     return {
       plan: buildPreviewPlan(input),
       engine: "deterministic-preview" as const,
@@ -83,10 +84,18 @@ export async function runStudentCoach(input: CoachRequest) {
     };
   }
 
+  const model = new BedrockModel({
+    region: process.env.AWS_REGION ?? "eu-north-1",
+    modelId: process.env.BEDROCK_MODEL_ID ?? "amazon.nova-lite-v1:0",
+    maxTokens: 700,
+    temperature: 0.2,
+  });
+
   const agent = new Agent({
     name: "tenderloop_student_coach",
     description: "A bounded study-planning agent for teenagers.",
     tools: [buildStudyPlan],
+    model,
     structuredOutputSchema: CoachResponseSchema,
     systemPrompt: `You are TenderLoop's Student Coach for ages 13–16.
 You are an AI tool, never a parent, person, therapist, disciplinarian, or surveillance system.

@@ -38,6 +38,17 @@ Amazon Bedrock, for example `AWS_BEARER_TOKEN_BEDROCK`, or standard AWS access-k
 environment variables with Bedrock model access. Secrets stay server-side and must
 not use a `NEXT_PUBLIC_` prefix.
 
+When using a temporary AWS CLI login or another SDK credential provider that does
+not expose credential environment variables, set `TENDERLOOP_USE_BEDROCK=true` to
+enable the live agent explicitly. The AWS SDK then resolves the temporary credentials
+through its normal server-side provider chain.
+
+TenderLoop pins the Bedrock provider to Amazon Nova Lite in Stockholm by default,
+avoiding an implicit dependency on an Anthropic model that may not be enabled for
+the account. Override it server-side with `AWS_REGION` and `BEDROCK_MODEL_ID` when
+needed; for example, `BEDROCK_MODEL_ID=eu.amazon.nova-lite-v1:0` uses the EU
+cross-Region inference profile.
+
 ## Product and engineering docs
 
 - [Product manifesto](docs/MANIFESTO.md)

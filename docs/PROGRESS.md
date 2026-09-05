@@ -1,6 +1,6 @@
 # TenderLoop delivery tracker
 
-Last verified: 2026-08-21 (India Standard Time)
+Last verified: 2026-09-05 (India Standard Time)
 
 ## Complete
 
@@ -12,21 +12,23 @@ Last verified: 2026-08-21 (India Standard Time)
 - Student-to-parent Help Card consent loop verified end to end with synthetic data.
 - Seven Devpost gallery assets uploaded.
 - AWS zero-spend guardrail created for `dev@pinegrass.in`; verified spend was $0.00 at creation.
+- AWS account activation confirmed: the Bedrock catalog and APIs are accessible in Europe (Stockholm).
+- Real Strands invocation verified against Amazon Nova Lite through `/api/coach`; the response reported `engine: "strands"`, called the validated `build_study_plan` tool, and returned HTTP 200 with schema-valid structured output.
+- Local lint, TypeScript, and optimized production build verified successfully on 2026-09-04.
 
-## Blocked on account activation
+## Current access note
 
-- A payment method has been added, but Amazon Bedrock still redirects to **Complete your account setup**.
-- Payment and customer authentication have been completed, but a direct Bedrock access test still redirects to AWS's account-activation gate. AWS account details and Regions now load normally, indicating that service activation is still propagating or the account remains on the limited free plan.
-- AWS notes that full service activation can take up to 24 hours after registration is completed.
+- Local AWS CLI access is authenticated with temporary `aws login` credentials. The session currently uses the AWS root identity; replace this with a least-privilege deployment role before production use and never create permanent root access keys.
+- The public demo should remain in clearly labelled deterministic-preview mode until a scoped Vercel-to-AWS credential path is configured.
 
-## Pending after activation
+## Pending
 
-1. Enable an appropriate Bedrock model and run one real Strands invocation.
-2. Deploy the bounded agent to Amazon Bedrock AgentCore Runtime.
-3. Deploy the public desktop web demo.
-4. Record and publish the demo video (five minutes or less).
-5. Add the video and live-demo URLs, final story, tags, and captions to Devpost.
-6. Review the public submission and obtain explicit approval before final submission.
+1. Commit and publish the verified Nova Lite configuration.
+2. Deploy the public desktop web demo in deterministic-preview mode.
+3. Record the real local Strands/Nova Lite flow and publish the demo video (five minutes or less).
+4. Add the video and live-demo URLs, final story, tags, and captions to Devpost.
+5. Review the public submission and obtain explicit approval before final submission.
+6. Optional scoring milestone: deploy the bounded agent to Amazon Bedrock AgentCore Runtime using a least-privilege role.
 
 ## Devpost state
 
