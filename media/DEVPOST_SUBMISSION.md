@@ -78,12 +78,11 @@ We also learned that multi-agent architecture is not automatically better. Tende
 
 ## What’s next for TenderLoop
 
-1. Run and capture the first Bedrock-backed Strands execution.
-2. Deploy the bounded runtime on Amazon Bedrock AgentCore.
-3. Add DynamoDB consent artifacts and Cedar-enforced typed tools.
-4. Connect the verified local Help Card flow to the AWS persistence layer.
-5. Add privacy, role-escalation, prompt-injection, academic-integrity, and safety red-team tests.
-6. Complete specialist review before enabling any health or crisis-related production flow.
+1. Deploy the bounded runtime on Amazon Bedrock AgentCore using least-privilege identity.
+2. Add DynamoDB consent artifacts and Cedar-enforced typed tools.
+3. Connect the verified local Help Card flow to the AWS persistence layer.
+4. Add privacy, role-escalation, prompt-injection, academic-integrity, and safety red-team tests.
+5. Complete specialist review before enabling any health or crisis-related production flow.
 
 The goal is not more engagement. Success means less repeated prompting, faster time to start, more student-initiated requests for specific help, fewer unnecessary parent alerts, and zero unauthorized disclosure in testing.
 
@@ -92,22 +91,17 @@ The goal is not more engagement. Success means less repeated prompting, faster t
 Recommended tags, in this order:
 
 1. Strands Agents
-2. Amazon Bedrock AgentCore
-3. Amazon Bedrock
-4. Amazon Cognito
-5. AWS Lambda
-6. Amazon API Gateway
-7. Amazon DynamoDB
-8. Amazon EventBridge
-9. Cedar
-10. Next.js
-11. React
-12. TypeScript
-13. Tailwind CSS
-14. shadcn/ui
-15. Radix UI
+2. Amazon Bedrock
+3. Amazon Nova
+4. Next.js
+5. React
+6. TypeScript
+7. Tailwind CSS
+8. shadcn/ui
+9. Radix UI
+10. Vercel
 
-Planned AWS services must be removed from the final tags if they are not genuinely implemented by submission time.
+Do not add AgentCore, Cognito, Lambda, API Gateway, DynamoDB, EventBridge, or Cedar unless deployment evidence is present before submission.
 
 ## Try-it-out links
 
@@ -123,6 +117,16 @@ Planned AWS services must be removed from the final tags if they are not genuine
 5. `04-caregiver-pass.png`
 6. `05-wellbeing-accommodation.png`
 7. `06-architecture.png`
+
+## Image-gallery captions
+
+1. `TenderLoop turns homework friction into private, consent-mediated family coordination.`
+2. `Maya breaks a science assignment into a small plan while her study conversation stays private.`
+3. `A child-readable preview shows exactly what Dad will—and will not—see before sharing.`
+4. `Daniel receives one concrete Help Card, without Maya’s transcript, mood score, or private preferences.`
+5. `Alex gets logistics-only access for today’s handoff, with automatic expiry at 9 PM.`
+6. `Private comfort settings adapt pacing and screen load without diagnosis or wellbeing surveillance.`
+7. `Strands and Bedrock draft plans; deterministic policy and explicit approval govern shared actions.`
 
 ## Additional Info recommendations
 
