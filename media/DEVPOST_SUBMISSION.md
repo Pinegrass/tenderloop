@@ -112,7 +112,7 @@ Planned AWS services must be removed from the final tags if they are not genuine
 ## Try-it-out links
 
 - Public repository: https://github.com/Pinegrass/tenderloop
-- Live demo: pending deployment
+- Live demo: https://tenderloop-two.vercel.app
 
 ## Image-gallery order
 
@@ -129,7 +129,7 @@ Planned AWS services must be removed from the final tags if they are not genuine
 - Track: **Everyday Agents**
 - Public code repository: `https://github.com/Pinegrass/tenderloop`
 - Architecture diagram: `media/06-architecture.png`
-- Live demo: pending deployment
+- Live demo: `https://tenderloop-two.vercel.app`
 - Testing instructions:
 
   ```text

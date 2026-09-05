@@ -33,6 +33,12 @@ npm run dev
 
 Then open `http://localhost:3000`.
 
+Public demo: <https://tenderloop-two.vercel.app>
+
+The public demo intentionally runs in clearly labelled deterministic-preview mode
+until a least-privilege Vercel-to-AWS credential path is configured. The repository's
+real Strands/Nova Lite path has been verified locally against Amazon Bedrock.
+
 To run the real Strands path, configure one of the credential methods supported by
 Amazon Bedrock, for example `AWS_BEARER_TOKEN_BEDROCK`, or standard AWS access-key
 environment variables with Bedrock model access. Secrets stay server-side and must

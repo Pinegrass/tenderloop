@@ -15,6 +15,7 @@ Last verified: 2026-09-05 (India Standard Time)
 - AWS account activation confirmed: the Bedrock catalog and APIs are accessible in Europe (Stockholm).
 - Real Strands invocation verified against Amazon Nova Lite through `/api/coach`; the response reported `engine: "strands"`, called the validated `build_study_plan` tool, and returned HTTP 200 with schema-valid structured output.
 - Local lint, TypeScript, and optimized production build verified successfully on 2026-09-04.
+- Public production demo deployed to Vercel at <https://tenderloop-two.vercel.app>; visual rendering, browser console, production API fallback, deployment status, and recent error logs were verified.
 
 ## Current access note
 
@@ -23,16 +24,14 @@ Last verified: 2026-09-05 (India Standard Time)
 
 ## Pending
 
-1. Commit and publish the verified Nova Lite configuration.
-2. Deploy the public desktop web demo in deterministic-preview mode.
-3. Record the real local Strands/Nova Lite flow and publish the demo video (five minutes or less).
-4. Add the video and live-demo URLs, final story, tags, and captions to Devpost.
-5. Review the public submission and obtain explicit approval before final submission.
-6. Optional scoring milestone: deploy the bounded agent to Amazon Bedrock AgentCore Runtime using a least-privilege role.
+1. Record the real local Strands/Nova Lite flow and publish the demo video (five minutes or less).
+2. Add the video and live-demo URLs, final story, tags, and captions to Devpost.
+3. Review the public submission and obtain explicit approval before final submission.
+4. Optional scoring milestone: deploy the bounded agent to Amazon Bedrock AgentCore Runtime using a least-privilege role.
 
 ## Devpost state
 
 - Draft progress: 3/5 steps.
 - Time remaining when last checked: 24 days.
-- Project Story, Built With tags, Try It Out link, gallery captions, and public video URL were blank.
+- Project Story, Built With tags, gallery captions, and public video URL were blank when last inspected. The live-demo URL is now ready to add.
 - Seven uploaded gallery images remain present.
