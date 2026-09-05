@@ -16,6 +16,7 @@ Last verified: 2026-09-05 (India Standard Time)
 - Real Strands invocation verified against Amazon Nova Lite through `/api/coach`; the response reported `engine: "strands"`, called the validated `build_study_plan` tool, and returned HTTP 200 with schema-valid structured output.
 - Local lint, TypeScript, and optimized production build verified successfully on 2026-09-04.
 - Public production demo deployed to Vercel at <https://tenderloop-two.vercel.app>; visual rendering, browser console, production API fallback, deployment status, and recent error logs were verified.
+- A timed 4:15–4:35 demo-video script and recording checklist are ready in `media/DEMO_VIDEO_SCRIPT.md`.
 
 ## Current access note
 
