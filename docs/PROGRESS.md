@@ -14,8 +14,11 @@ Last verified: 2026-09-05 (India Standard Time)
 - AWS zero-spend guardrail created for `dev@pinegrass.in`; verified spend was $0.00 at creation.
 - AWS account activation confirmed: the Bedrock catalog and APIs are accessible in Europe (Stockholm).
 - Real Strands invocation verified against Amazon Nova Lite through `/api/coach`; the response reported `engine: "strands"`, called the validated `build_study_plan` tool, and returned HTTP 200 with schema-valid structured output.
-- Local lint, TypeScript, and optimized production build verified successfully on 2026-09-04.
+- Local lint, TypeScript, and optimized production build verified successfully on 2026-09-05.
 - Public production demo deployed to Vercel at <https://tenderloop-two.vercel.app>; visual rendering, browser console, production API fallback, deployment status, and recent error logs were verified.
+- Mobile design audit completed on a connected Samsung Android 16 device. The refined production UI now has safe system-bar spacing, explicit role labels, stable perspective navigation, compact mobile hierarchy, auditable agent-state messaging, and a scroll-safe consent dialog.
+- The architecture diagram and documentation now distinguish the verified prototype from the unimplemented production-hardening roadmap.
+- Two debug builds were installed on the test device: the production safe-preview wrapper and a USB-local Live Demo wrapper. The latter invoked the real Strands/Nova Lite route successfully.
 - A timed 4:15–4:35 demo-video script and recording checklist are ready in `media/DEMO_VIDEO_SCRIPT.md`.
 
 ## Current access note
@@ -33,6 +36,6 @@ Last verified: 2026-09-05 (India Standard Time)
 ## Devpost state
 
 - Draft progress: 3/5 steps.
-- Time remaining when last checked: 24 days.
+- Time remaining when last checked: 10 days.
 - Project Story, Built With tags, gallery captions, and public video URL were blank when last inspected. The live-demo URL is now ready to add.
 - Seven uploaded gallery images remain present.
