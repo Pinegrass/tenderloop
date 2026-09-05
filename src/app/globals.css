@@ -92,6 +92,10 @@
   .app-safe-bottom {
     padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
   }
+
+  .app-safe-nav {
+    padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -2,20 +2,27 @@
 
 import { useState } from "react";
 import {
+  Activity,
   ArrowRight,
+  Bot,
   BookOpen,
   CalendarDays,
   Check,
   ChevronRight,
   Clock3,
+  Database,
   Eye,
   HandHeart,
+  Home,
   KeyRound,
   LockKeyhole,
   MessageCircleHeart,
   RefreshCcw,
+  RotateCcw,
+  Settings,
   ShieldCheck,
   Sparkles,
+  UserRound,
   Users,
 } from "lucide-react";
 
@@ -32,8 +39,10 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Role = "student" | "parent" | "caregiver";
+type AppSection = "today" | "family" | "activity" | "settings";
 type Difficulty = "starting" | "understanding" | "finding-time";
 type HelpCardStatus = "private" | "sent" | "accepted";
+type CoachEngine = "preview" | "strands";
 
 type CoachPlan = {
   acknowledgement: string;
@@ -46,6 +55,17 @@ const roles: Array<{ id: Role; label: string; person: string }> = [
   { id: "student", label: "Student", person: "Maya" },
   { id: "parent", label: "Parent", person: "Daniel" },
   { id: "caregiver", label: "Caregiver", person: "Alex" },
+];
+
+const navigation: Array<{
+  id: AppSection;
+  label: string;
+  icon: typeof Home;
+}> = [
+  { id: "today", label: "Today", icon: Home },
+  { id: "family", label: "Family", icon: Users },
+  { id: "activity", label: "Activity", icon: Activity },
+  { id: "settings", label: "Settings", icon: Settings },
 ];
 
 const roleCopy: Record<Role, { eyebrow: string; title: string; description: string }> = {
@@ -63,6 +83,24 @@ const roleCopy: Record<Role, { eyebrow: string; title: string; description: stri
     eyebrow: "Caregiver pass · ends at 9:00 PM",
     title: "Welcome, Alex",
     description: "You can support today’s handoff and report an exception. Nothing else is visible.",
+  },
+};
+
+const sectionCopy: Record<Exclude<AppSection, "today">, { eyebrow: string; title: string; description: string }> = {
+  family: {
+    eyebrow: "Family control center",
+    title: "Clear access, without surveillance",
+    description: "See who can access what, when permissions expire, and which decisions crossed a boundary.",
+  },
+  activity: {
+    eyebrow: "Explainable by default",
+    title: "A quiet agent with a visible trail",
+    description: "TenderLoop records meaningful actions and approvals—not the private conversation behind them.",
+  },
+  settings: {
+    eyebrow: "Privacy & safety",
+    title: "Boundaries you can understand",
+    description: "Review the agent runtime, data behavior, sharing defaults, and routes to human support.",
   },
 };
 
@@ -99,7 +137,17 @@ function AudienceChip({ children, tone = "private" }: { children: React.ReactNod
   );
 }
 
-function StudentView({ onShare }: { onShare: () => void }) {
+function StudentView({
+  onShare,
+  onOpenSettings,
+  coachEngine,
+  onCoachEngineChange,
+}: {
+  onShare: () => void;
+  onOpenSettings: () => void;
+  coachEngine: CoachEngine;
+  onCoachEngineChange: (engine: CoachEngine) => void;
+}) {
   const [studyComfort, setStudyComfort] = useState<"regular" | "low-energy" | "screen-light">("regular");
   const [difficulty, setDifficulty] = useState<Difficulty>("starting");
   const [coachPlan, setCoachPlan] = useState<CoachPlan>({
@@ -112,7 +160,6 @@ function StudentView({ onShare }: { onShare: () => void }) {
     checkInQuestion: "Which step would make the rest feel easier once it is done?",
     parentHelpSuggestion: null,
   });
-  const [coachEngine, setCoachEngine] = useState<"preview" | "strands">("preview");
   const [coachLoading, setCoachLoading] = useState(false);
   const [coachError, setCoachError] = useState<string | null>(null);
   const comfortCopy = {
@@ -141,7 +188,7 @@ function StudentView({ onShare }: { onShare: () => void }) {
       if (!response.ok) throw new Error(data.error ?? "The coach could not create a plan.");
 
       setCoachPlan(data.plan);
-      setCoachEngine(data.engine === "strands" ? "strands" : "preview");
+      onCoachEngineChange(data.engine === "strands" ? "strands" : "preview");
     } catch (error) {
       setCoachError(error instanceof Error ? error.message : "The coach could not create a plan.");
     } finally {
@@ -282,7 +329,7 @@ function StudentView({ onShare }: { onShare: () => void }) {
             <div className="flex items-center justify-between gap-3 text-sm"><span>Study conversation</span><AudienceChip>Only you</AudienceChip></div>
             <div className="flex items-center justify-between gap-3 text-sm"><span>Today’s schedule</span><AudienceChip tone="shared">Family</AudienceChip></div>
             <div className="flex items-center justify-between gap-3 text-sm"><span>Soccer handoff</span><AudienceChip tone="limited">Alex until 9</AudienceChip></div>
-            <Button variant="ghost" className="mt-1 w-full justify-between px-0 text-[#265d49]">Review privacy <ChevronRight className="size-4" aria-hidden="true" /></Button>
+            <Button variant="ghost" className="mt-1 w-full justify-between px-0 text-[#265d49]" onClick={onOpenSettings}>Review privacy <ChevronRight className="size-4" aria-hidden="true" /></Button>
           </CardContent>
         </Card>
 
@@ -428,6 +475,194 @@ function CaregiverView() {
   );
 }
 
+function AppNavigation({
+  activeSection,
+  onNavigate,
+  mobile = false,
+}: {
+  activeSection: AppSection;
+  onNavigate: (section: AppSection) => void;
+  mobile?: boolean;
+}) {
+  return (
+    <nav aria-label="Primary navigation" className={mobile ? "grid grid-cols-4" : "flex items-center gap-1 rounded-full border border-black/5 bg-white/65 p-1 shadow-sm"}>
+      {navigation.map((item) => {
+        const Icon = item.icon;
+        const active = activeSection === item.id;
+
+        return (
+          <button
+            key={item.id}
+            type="button"
+            aria-current={active ? "page" : undefined}
+            onClick={() => onNavigate(item.id)}
+            className={mobile
+              ? `flex min-h-15 flex-col items-center justify-center gap-1 rounded-xl px-1 text-[10px] font-semibold transition-colors ${active ? "bg-[#e5eee8] text-[#265d49]" : "text-muted-foreground hover:text-foreground"}`
+              : `inline-flex min-h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors ${active ? "bg-[#265d49] text-white shadow-sm" : "text-muted-foreground hover:bg-[#edf2ee] hover:text-foreground"}`}
+          >
+            <Icon className={mobile ? "size-5" : "size-4"} aria-hidden="true" />
+            {item.label}
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
+function FamilyView({
+  helpCardStatus,
+  onOpenRole,
+}: {
+  helpCardStatus: HelpCardStatus;
+  onOpenRole: (role: Role) => void;
+}) {
+  return (
+    <div className="space-y-5">
+      <div className="grid gap-5 lg:grid-cols-[1.15fr_.85fr]">
+        <Card className="paper-shadow overflow-hidden border-0">
+          <CardHeader className="border-b bg-[#f8f3e9]">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#527365]">Household access</p>
+                <CardTitle className="mt-1 text-xl">One family, three clear boundaries</CardTitle>
+              </div>
+              <AudienceChip>Student-controlled</AudienceChip>
+            </div>
+          </CardHeader>
+          <CardContent className="grid gap-3 p-4 sm:grid-cols-3 sm:p-6">
+            {roles.map((item) => {
+              const scope = roleScope[item.id];
+              const Icon = item.id === "student" ? UserRound : item.id === "parent" ? HandHeart : KeyRound;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onOpenRole(item.id)}
+                  className="group rounded-2xl border bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-[#abc2b6] hover:shadow-md"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="grid size-10 place-items-center rounded-xl bg-[#e8efea] text-[#265d49]"><Icon className="size-5" aria-hidden="true" /></span>
+                    <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                  </div>
+                  <p className="mt-4 text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">{item.label}</p>
+                  <h3 className="mt-0.5 font-semibold">{item.person}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{scope.detail}</p>
+                  <div className="mt-3"><AudienceChip tone={scope.tone}>{scope.label}</AudienceChip></div>
+                </button>
+              );
+            })}
+          </CardContent>
+        </Card>
+
+        <Card className="border-[#cbd9df] bg-[#f5fafc]">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base"><KeyRound className="size-4 text-[#385d6c]" /> Alex’s caregiver pass</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm">
+            <div className="flex items-center justify-between gap-3"><span>Status</span><AudienceChip tone="limited">Active until 9:00 PM</AudienceChip></div>
+            <div className="rounded-xl bg-white p-4 leading-6">
+              <p className="font-semibold">Visible today</p>
+              <p className="mt-1 text-muted-foreground">Pickup, soccer logistics, and Daniel’s contact for exceptions.</p>
+            </div>
+            <p className="flex gap-2 text-muted-foreground"><LockKeyhole className="mt-0.5 size-4 shrink-0" /> Grades, private chat, mood, and future schedules remain hidden.</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardContent className="grid gap-4 p-5 sm:grid-cols-[1fr_auto] sm:items-center">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#8a5a42]">Current family decision</p>
+            <p className="mt-1 font-semibold">{helpCardStatus === "accepted" ? "Daniel confirmed Maya’s 7:30 PM help request." : helpCardStatus === "sent" ? "Maya’s approved Help Card is waiting for Daniel." : "Maya has not shared a Help Card."}</p>
+            <p className="mt-1 text-sm text-muted-foreground">Only the approved decision crosses between private workspaces.</p>
+          </div>
+          <Button variant="outline" className="rounded-full bg-white" onClick={() => onOpenRole(helpCardStatus === "private" ? "student" : "parent")}>Open relevant view <ArrowRight className="size-4" /></Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function ActivityView({ helpCardStatus }: { helpCardStatus: HelpCardStatus }) {
+  return (
+    <div className="grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
+      <Card className="paper-shadow border-0">
+        <CardHeader>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#527365]">Today · audit trail</p><CardTitle className="mt-1 text-xl">Actions, approvals, and boundaries</CardTitle></div>
+            <AudienceChip tone="shared">Shared decisions only</AudienceChip>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="relative space-y-4 border-l-2 border-[#cfddd5] pl-6">
+            <div className="relative rounded-2xl border bg-white p-4"><span className="absolute -left-[31px] top-5 size-3 rounded-full bg-[#438067] ring-4 ring-[#edf4ef]" /><p className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">4:02 PM · Student Coach</p><p className="mt-1 text-sm leading-6">Drafted a three-step science plan for Maya. No external action taken.</p></div>
+            {helpCardStatus !== "private" ? <div className="relative rounded-2xl border border-[#ead9cd] bg-[#fff8f2] p-4"><span className="absolute -left-[31px] top-5 size-3 rounded-full bg-[#b47759] ring-4 ring-[#faeee5]" /><p className="text-xs font-bold uppercase tracking-[0.12em] text-[#81533d]">4:06 PM · Maya approved</p><p className="mt-1 text-sm leading-6">Shared one Help Card with Daniel. Raw chat and comfort preference remained private.</p></div> : null}
+            {helpCardStatus === "accepted" ? <div className="relative rounded-2xl border border-[#d9e3dc] bg-[#f2f7f3] p-4"><span className="absolute -left-[31px] top-5 size-3 rounded-full bg-[#438067] ring-4 ring-[#edf4ef]" /><p className="text-xs font-bold uppercase tracking-[0.12em] text-[#3d715d]">4:08 PM · Daniel confirmed</p><p className="mt-1 text-sm leading-6">Accepted a ten-minute source-finding assist at 7:30 PM.</p></div> : null}
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="space-y-5">
+        <Card className="border-[#d9e3dc] bg-[#f4f8f5]">
+          <CardHeader><CardTitle className="flex items-center gap-2 text-base"><ShieldCheck className="size-5 text-[#347259]" /> Privacy proof</CardTitle></CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <p className="flex gap-2"><Check className="size-4 shrink-0 text-[#347259]" /> Agent drafts are labeled before action</p>
+            <p className="flex gap-2"><Check className="size-4 shrink-0 text-[#347259]" /> Student approval is recorded</p>
+            <p className="flex gap-2"><Check className="size-4 shrink-0 text-[#347259]" /> Parent response is attributable</p>
+            <p className="flex gap-2 text-muted-foreground"><LockKeyhole className="size-4 shrink-0" /> Private conversation content is excluded</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-5">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">Data retention</p>
+            <p className="mt-2 font-semibold">Session-only demonstration</p>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">This competition build uses synthetic family data and does not persist activity after the demo resets.</p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function SettingsView({ coachEngine, onReset }: { coachEngine: CoachEngine; onReset: () => void }) {
+  return (
+    <div className="grid gap-5 lg:grid-cols-[1.15fr_.85fr]">
+      <div className="space-y-5">
+        <Card className="paper-shadow border-0">
+          <CardHeader><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#527365]">Safety defaults</p><CardTitle className="mt-1 text-xl">Privacy is part of the workflow</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between gap-4 rounded-2xl border bg-white p-4"><div><p className="font-semibold">Ask before sharing</p><p className="mt-1 text-sm text-muted-foreground">Maya approves the exact words and recipient.</p></div><span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-[#dcebe2] px-3 text-xs font-bold text-[#265d49]"><Check className="size-4" /> Always on</span></div>
+            <div className="flex items-center justify-between gap-4 rounded-2xl border bg-white p-4"><div><p className="font-semibold">Minimum necessary access</p><p className="mt-1 text-sm text-muted-foreground">Each person sees only what their role requires.</p></div><span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-[#dcebe2] px-3 text-xs font-bold text-[#265d49]"><Check className="size-4" /> Enforced</span></div>
+            <div className="flex items-center justify-between gap-4 rounded-2xl border bg-white p-4"><div><p className="font-semibold">Medical and crisis boundary</p><p className="mt-1 text-sm text-muted-foreground">TenderLoop pauses and routes people to trusted human support.</p></div><span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-[#f3e8df] px-3 text-xs font-bold text-[#754a36]">Human first</span></div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle className="text-base">Get human help</CardTitle></CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl bg-[#f7f5f0] p-4"><p className="font-semibold">Talk to a trusted adult</p><p className="mt-1 text-sm leading-6 text-muted-foreground">For emotional, health, safety, or family concerns, stop the agent flow and contact a person you trust.</p></div>
+            <div className="rounded-xl bg-[#f7f5f0] p-4"><p className="font-semibold">Emergency support</p><p className="mt-1 text-sm leading-6 text-muted-foreground">If someone may be in immediate danger, contact local emergency services now.</p></div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="space-y-5">
+        <Card className="border-[#cbd9df] bg-[#f5fafc]">
+          <CardHeader><CardTitle className="flex items-center gap-2 text-base"><Bot className="size-5 text-[#385d6c]" /> Agent runtime</CardTitle></CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <div className="flex items-center justify-between gap-3"><span>Last plan engine</span><Badge variant="outline" className="rounded-full bg-white">{coachEngine === "strands" ? "Strands agent" : "Safe preview"}</Badge></div>
+            <p className="leading-6 text-muted-foreground">The local demo uses the Strands Agents SDK with Amazon Nova Lite when AWS credentials are available. Safe Preview keeps the public experience reliable.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle className="flex items-center gap-2 text-base"><Database className="size-5 text-[#347259]" /> Demo data</CardTitle></CardHeader>
+          <CardContent className="space-y-3 text-sm"><p><span className="font-semibold">Mode:</span> Synthetic family scenario</p><p><span className="font-semibold">Retention:</span> Session only</p><p className="text-muted-foreground">No account, background tracking, or persistent family record is created in this competition build.</p><Button variant="outline" className="mt-2 w-full rounded-full bg-white" onClick={onReset}><RotateCcw className="size-4" /> Reset demonstration</Button></CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 function HelpCardDialog({ open, onOpenChange, onSend }: { open: boolean; onOpenChange: (open: boolean) => void; onSend: () => void }) {
   const [sent, setSent] = useState(false);
 
@@ -474,42 +709,12 @@ function HelpCardDialog({ open, onOpenChange, onSend }: { open: boolean; onOpenC
   );
 }
 
-function ActivityLogDialog({ open, onOpenChange, helpCardStatus }: { open: boolean; onOpenChange: (open: boolean) => void; helpCardStatus: HelpCardStatus }) {
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl bg-[#fffdf8]">
-        <DialogHeader>
-          <DialogTitle className="text-2xl">Family activity log</DialogTitle>
-          <DialogDescription>Shared actions are visible. Private student conversation content is never recorded here.</DialogDescription>
-        </DialogHeader>
-        <div className="space-y-3 py-2">
-          <div className="rounded-xl border bg-white p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">4:02 PM · Student Coach</p>
-            <p className="mt-1 text-sm">Drafted a three-step science plan for Maya. No external action taken.</p>
-          </div>
-          {helpCardStatus !== "private" ? (
-            <div className="rounded-xl border border-[#ead9cd] bg-[#fff8f2] p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#81533d]">4:06 PM · Maya approved</p>
-              <p className="mt-1 text-sm">Shared one Help Card with Daniel. Raw chat and comfort preference remained private.</p>
-            </div>
-          ) : null}
-          {helpCardStatus === "accepted" ? (
-            <div className="rounded-xl border border-[#d9e3dc] bg-[#f2f7f3] p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#3d715d]">4:08 PM · Daniel confirmed</p>
-              <p className="mt-1 text-sm">Accepted a ten-minute source-finding assist at 7:30 PM.</p>
-            </div>
-          ) : null}
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 export function TenderLoopDemo() {
+  const [activeSection, setActiveSection] = useState<AppSection>("today");
   const [role, setRole] = useState<Role>("student");
   const [helpOpen, setHelpOpen] = useState(false);
-  const [activityOpen, setActivityOpen] = useState(false);
   const [helpCardStatus, setHelpCardStatus] = useState<HelpCardStatus>("private");
+  const [coachEngine, setCoachEngine] = useState<CoachEngine>("preview");
   const copy = roleCopy[role];
   const activityCopy = helpCardStatus === "accepted"
     ? "Daniel confirmed Maya’s approved Help Card for 7:30 PM. No private chat was shared."
@@ -518,41 +723,58 @@ export function TenderLoopDemo() {
       : "Drafted a plan from Maya’s assignment and family calendar. No action taken without approval.";
   const scope = roleScope[role];
 
-  function changeRole(nextRole: Role) {
-    setRole(nextRole);
+  function navigate(section: AppSection) {
+    setActiveSection(section);
     requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
   }
 
+  function changeRole(nextRole: Role) {
+    setRole(nextRole);
+    setActiveSection("today");
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
+  }
+
+  function resetDemo() {
+    setRole("student");
+    setHelpCardStatus("private");
+    setCoachEngine("preview");
+    setActiveSection("today");
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
+  }
+
+  const heading = activeSection === "today" ? copy : sectionCopy[activeSection];
+
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen pb-20 md:pb-0">
       <header className="app-safe-top sticky top-0 z-40 border-b border-black/5 bg-[#f9f6f0]/92 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <div className="grid size-9 place-items-center rounded-xl bg-[#265d49] text-white sm:size-10 sm:rounded-2xl"><HandHeart className="size-5" aria-hidden="true" /></div>
             <div><p className="text-base font-bold tracking-tight">TenderLoop</p><p className="text-xs text-muted-foreground">from nagging to navigating</p></div>
           </div>
-          <div className="inline-flex min-h-9 items-center gap-1.5 rounded-full border bg-white/70 px-2.5 text-[11px] font-semibold text-[#315f4d] sm:px-3 sm:text-xs"><ShieldCheck className="size-4 text-[#347259]" aria-hidden="true" /> <span className="sm:hidden">Private by design</span><span className="hidden sm:inline">Student-first privacy</span></div>
+          <div className="hidden md:block"><AppNavigation activeSection={activeSection} onNavigate={navigate} /></div>
+          <div className="inline-flex min-h-9 items-center gap-1.5 rounded-full border bg-white/70 px-2.5 text-[11px] font-semibold text-[#315f4d] md:hidden"><ShieldCheck className="size-4 text-[#347259]" aria-hidden="true" /> Private by design</div>
         </div>
       </header>
 
       <div className="app-safe-bottom mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-9">
         <div className="mb-4 flex flex-col justify-between gap-4 md:mb-6 md:flex-row md:items-end">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#527365] sm:text-xs">{copy.eyebrow}</p>
-            <h1 className="mt-1.5 text-[1.75rem] font-semibold leading-tight tracking-[-0.035em] sm:mt-2 sm:text-4xl">{copy.title}</h1>
-            <p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted-foreground sm:mt-2 sm:text-base sm:leading-7">{copy.description}</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#527365] sm:text-xs">{heading.eyebrow}</p>
+            <h1 className="mt-1.5 text-[1.75rem] font-semibold leading-tight tracking-[-0.035em] sm:mt-2 sm:text-4xl">{heading.title}</h1>
+            <p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted-foreground sm:mt-2 sm:text-base sm:leading-7">{heading.description}</p>
           </div>
-          <div className="w-full md:w-auto">
+          {activeSection === "today" ? <div className="w-full md:w-auto">
             <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Choose a perspective</p>
             <Tabs value={role} onValueChange={(value) => changeRole(value as Role)}>
               <TabsList className="grid h-auto w-full grid-cols-3 rounded-2xl bg-[#e6e2d9] p-1 md:w-auto md:rounded-full">
                 {roles.map((item) => <TabsTrigger key={item.id} value={item.id} className="min-h-12 flex-col gap-0 rounded-xl px-2 leading-tight md:min-h-10 md:flex-row md:gap-1 md:rounded-full md:px-4"><span className="text-[9px] font-bold uppercase tracking-[0.1em] text-current/60 md:text-xs md:normal-case md:tracking-normal">{item.label}</span><span className="text-sm">{item.person}</span></TabsTrigger>)}
               </TabsList>
             </Tabs>
-          </div>
+          </div> : null}
         </div>
 
-        <div className="mb-5 grid gap-3 rounded-2xl border border-[#d5ded8] bg-[#f7faf8] px-4 py-3 sm:flex sm:items-center sm:justify-between">
+        {activeSection === "today" ? <div className="mb-5 grid gap-3 rounded-2xl border border-[#d5ded8] bg-[#f7faf8] px-4 py-3 sm:flex sm:items-center sm:justify-between">
           <div className="flex min-w-0 gap-3">
             <Sparkles className="mt-0.5 size-4 shrink-0 text-[#347259]" aria-hidden="true" />
             <div><p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#527365]">Auditable agent state</p><p className="mt-0.5 text-sm leading-5"><span className="font-semibold">Current:</span> {activityCopy}</p></div>
@@ -561,17 +783,31 @@ export function TenderLoopDemo() {
             <AudienceChip tone={scope.tone}>{scope.label}</AudienceChip>
             <p className="hidden text-xs leading-5 text-muted-foreground lg:block">{scope.detail}</p>
           </div>
-        </div>
+        </div> : null}
 
-        {role === "student" ? <StudentView onShare={() => setHelpOpen(true)} /> : role === "parent" ? <ParentView helpCardStatus={helpCardStatus} onAccept={() => setHelpCardStatus("accepted")} /> : <CaregiverView />}
+        {activeSection === "today" ? (
+          role === "student"
+            ? <StudentView onShare={() => setHelpOpen(true)} onOpenSettings={() => navigate("settings")} coachEngine={coachEngine} onCoachEngineChange={setCoachEngine} />
+            : role === "parent"
+              ? <ParentView helpCardStatus={helpCardStatus} onAccept={() => setHelpCardStatus("accepted")} />
+              : <CaregiverView />
+        ) : activeSection === "family" ? (
+          <FamilyView helpCardStatus={helpCardStatus} onOpenRole={changeRole} />
+        ) : activeSection === "activity" ? (
+          <ActivityView helpCardStatus={helpCardStatus} />
+        ) : (
+          <SettingsView coachEngine={coachEngine} onReset={resetDemo} />
+        )}
 
         <footer className="mt-8 flex flex-col justify-between gap-3 border-t pt-5 text-xs text-muted-foreground sm:flex-row">
           <p>TenderLoop is an AI tool, not a parent, tutor, therapist, or person.</p>
-          <div className="flex gap-4"><button className="min-h-11 hover:text-foreground">Privacy agreement</button><button className="min-h-11 hover:text-foreground" onClick={() => setActivityOpen(true)}>Activity log</button><button className="min-h-11 hover:text-foreground">Get human help</button></div>
+          <div className="flex flex-wrap gap-x-4"><button className="min-h-11 hover:text-foreground" onClick={() => navigate("settings")}>Privacy & safety</button><button className="min-h-11 hover:text-foreground" onClick={() => navigate("activity")}>Activity log</button><button className="min-h-11 hover:text-foreground" onClick={() => navigate("settings")}>Get human help</button></div>
         </footer>
       </div>
+      <div className="app-safe-nav fixed inset-x-0 bottom-0 z-50 border-t border-black/8 bg-[#fffdf8]/95 px-2 pt-1 shadow-[0_-12px_30px_rgb(40_57_49_/_0.10)] backdrop-blur-xl md:hidden">
+        <AppNavigation activeSection={activeSection} onNavigate={navigate} mobile />
+      </div>
       <HelpCardDialog open={helpOpen} onOpenChange={setHelpOpen} onSend={() => setHelpCardStatus("sent")} />
-      <ActivityLogDialog open={activityOpen} onOpenChange={setActivityOpen} helpCardStatus={helpCardStatus} />
     </main>
   );
 }
