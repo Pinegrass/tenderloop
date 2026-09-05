@@ -13,7 +13,6 @@ import {
   KeyRound,
   LockKeyhole,
   MessageCircleHeart,
-  MoreHorizontal,
   RefreshCcw,
   ShieldCheck,
   Sparkles,
@@ -64,6 +63,24 @@ const roleCopy: Record<Role, { eyebrow: string; title: string; description: stri
     eyebrow: "Caregiver pass · ends at 9:00 PM",
     title: "Welcome, Alex",
     description: "You can support today’s handoff and report an exception. Nothing else is visible.",
+  },
+};
+
+const roleScope: Record<Role, { label: string; detail: string; tone: "private" | "shared" | "limited" }> = {
+  student: {
+    label: "Private workspace",
+    detail: "The agent may draft. Maya approves anything shared.",
+    tone: "private",
+  },
+  parent: {
+    label: "Approved requests only",
+    detail: "Daniel sees decisions and Help Cards—not Maya’s private chat.",
+    tone: "shared",
+  },
+  caregiver: {
+    label: "Time-limited access",
+    detail: "Alex receives today’s logistics only, with a visible expiry.",
+    tone: "limited",
   },
 };
 
@@ -136,7 +153,7 @@ function StudentView({ onShare }: { onShare: () => void }) {
     <div className="grid gap-5 lg:grid-cols-[1.35fr_.85fr]">
       <div className="space-y-5">
         <Card className="paper-shadow overflow-hidden border-0 bg-[#fffdf8] py-0">
-          <div className="border-b border-[#e9e3d9] bg-[#f8f3e9] px-5 py-4 sm:px-6">
+          <div className="border-b border-[#e9e3d9] bg-[#f8f3e9] px-4 py-3.5 sm:px-6 sm:py-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="grid size-11 place-items-center rounded-2xl bg-[#dbe8df] text-[#265d49]">
@@ -150,7 +167,7 @@ function StudentView({ onShare }: { onShare: () => void }) {
               <Badge variant="outline" className="rounded-full bg-white px-3 py-1 text-muted-foreground">Due Friday</Badge>
             </div>
           </div>
-          <CardContent className="space-y-5 px-5 py-5 sm:px-6">
+          <CardContent className="space-y-5 px-4 py-4 sm:px-6 sm:py-5">
             <div className="rounded-2xl border border-[#d9e3dc] bg-[#f2f7f3] p-4">
               <div className="flex gap-3">
                 <Sparkles className="mt-0.5 size-5 shrink-0 text-[#3a745d]" aria-hidden="true" />
@@ -204,13 +221,13 @@ function StudentView({ onShare }: { onShare: () => void }) {
               </div>
               <p className="mt-3 text-sm text-muted-foreground">{coachPlan.checkInQuestion}</p>
               {coachError ? <p className="mt-3 text-sm font-medium text-red-700" role="alert">{coachError}</p> : null}
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <div className="mt-4 grid gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
                 <AudienceChip>Private until you share</AudienceChip>
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" className="rounded-full bg-white" onClick={createPlan} disabled={coachLoading}>
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+                  <Button variant="outline" className="rounded-full bg-white px-3" onClick={createPlan} disabled={coachLoading}>
                     {coachLoading ? "Planning…" : "Create my plan"}
                   </Button>
-                  <Button className="rounded-full">Start the first step <ArrowRight className="size-4" aria-hidden="true" /></Button>
+                  <Button className="rounded-full px-3">Start first step <ArrowRight className="size-4" aria-hidden="true" /></Button>
                 </div>
               </div>
             </div>
@@ -310,7 +327,7 @@ function ParentView({ helpCardStatus, onAccept }: { helpCardStatus: HelpCardStat
     return (
       <div className="grid gap-5 lg:grid-cols-[1.15fr_.85fr]">
         <Card className="paper-shadow border-0">
-          <CardContent className="grid min-h-72 place-items-center p-8 text-center">
+          <CardContent className="grid min-h-52 place-items-center p-6 text-center sm:min-h-72 sm:p-8">
             <div className="max-w-md">
               <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#edf4ef] text-[#265d49]"><LockKeyhole className="size-5" /></div>
               <h2 className="mt-4 text-xl font-semibold">No help request has been shared</h2>
@@ -499,40 +516,51 @@ export function TenderLoopDemo() {
     : helpCardStatus === "sent"
       ? "Maya shared one approved Help Card with Daniel. Her study conversation remains private."
       : "Drafted a plan from Maya’s assignment and family calendar. No action taken without approval.";
+  const scope = roleScope[role];
+
+  function changeRole(nextRole: Role) {
+    setRole(nextRole);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   return (
     <main className="min-h-screen">
-      <header className="border-b border-black/5 bg-[#f9f6f0]/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+      <header className="app-safe-top sticky top-0 z-40 border-b border-black/5 bg-[#f9f6f0]/92 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-2xl bg-[#265d49] text-white"><HandHeart className="size-5" aria-hidden="true" /></div>
+            <div className="grid size-9 place-items-center rounded-xl bg-[#265d49] text-white sm:size-10 sm:rounded-2xl"><HandHeart className="size-5" aria-hidden="true" /></div>
             <div><p className="text-base font-bold tracking-tight">TenderLoop</p><p className="text-xs text-muted-foreground">from nagging to navigating</p></div>
           </div>
-          <div className="hidden items-center gap-2 rounded-full border bg-white/70 px-3 py-1.5 text-xs font-medium text-muted-foreground sm:flex"><ShieldCheck className="size-4 text-[#347259]" aria-hidden="true" /> Student-first privacy</div>
-          <Button variant="ghost" size="icon" aria-label="More options"><MoreHorizontal className="size-5" /></Button>
+          <div className="inline-flex min-h-9 items-center gap-1.5 rounded-full border bg-white/70 px-2.5 text-[11px] font-semibold text-[#315f4d] sm:px-3 sm:text-xs"><ShieldCheck className="size-4 text-[#347259]" aria-hidden="true" /> <span className="sm:hidden">Private by design</span><span className="hidden sm:inline">Student-first privacy</span></div>
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-9">
-        <div className="mb-7 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+      <div className="app-safe-bottom mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-9">
+        <div className="mb-4 flex flex-col justify-between gap-4 md:mb-6 md:flex-row md:items-end">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#527365]">{copy.eyebrow}</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">{copy.title}</h1>
-            <p className="mt-2 max-w-2xl text-base leading-7 text-muted-foreground">{copy.description}</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#527365] sm:text-xs">{copy.eyebrow}</p>
+            <h1 className="mt-1.5 text-[1.75rem] font-semibold leading-tight tracking-[-0.035em] sm:mt-2 sm:text-4xl">{copy.title}</h1>
+            <p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted-foreground sm:mt-2 sm:text-base sm:leading-7">{copy.description}</p>
           </div>
-          <div>
-            <p className="mb-2 text-xs font-semibold text-muted-foreground">Demo perspective</p>
-            <Tabs value={role} onValueChange={(value) => setRole(value as Role)}>
-              <TabsList className="h-auto rounded-full bg-[#e6e2d9] p-1">
-                {roles.map((item) => <TabsTrigger key={item.id} value={item.id} className="min-h-10 rounded-full px-4"><span className="hidden sm:inline">{item.label} · </span>{item.person}</TabsTrigger>)}
+          <div className="w-full md:w-auto">
+            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Choose a perspective</p>
+            <Tabs value={role} onValueChange={(value) => changeRole(value as Role)}>
+              <TabsList className="grid h-auto w-full grid-cols-3 rounded-2xl bg-[#e6e2d9] p-1 md:w-auto md:rounded-full">
+                {roles.map((item) => <TabsTrigger key={item.id} value={item.id} className="min-h-12 flex-col gap-0 rounded-xl px-2 leading-tight md:min-h-10 md:flex-row md:gap-1 md:rounded-full md:px-4"><span className="text-[9px] font-bold uppercase tracking-[0.1em] text-current/60 md:text-xs md:normal-case md:tracking-normal">{item.label}</span><span className="text-sm">{item.person}</span></TabsTrigger>)}
               </TabsList>
             </Tabs>
           </div>
         </div>
 
-        <div className="mb-5 flex items-center gap-3 rounded-xl border border-[#d5ded8] bg-[#f7faf8] px-4 py-3 text-sm">
-          <Sparkles className="size-4 shrink-0 text-[#347259]" aria-hidden="true" />
-          <p><span className="font-semibold">Agent activity:</span> {activityCopy}</p>
+        <div className="mb-5 grid gap-3 rounded-2xl border border-[#d5ded8] bg-[#f7faf8] px-4 py-3 sm:flex sm:items-center sm:justify-between">
+          <div className="flex min-w-0 gap-3">
+            <Sparkles className="mt-0.5 size-4 shrink-0 text-[#347259]" aria-hidden="true" />
+            <div><p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#527365]">Auditable agent state</p><p className="mt-0.5 text-sm leading-5"><span className="font-semibold">Current:</span> {activityCopy}</p></div>
+          </div>
+          <div className="flex items-center gap-2 border-t border-[#dce5df] pt-2 sm:max-w-xs sm:border-l sm:border-t-0 sm:pl-3 sm:pt-0">
+            <AudienceChip tone={scope.tone}>{scope.label}</AudienceChip>
+            <p className="hidden text-xs leading-5 text-muted-foreground lg:block">{scope.detail}</p>
+          </div>
         </div>
 
         {role === "student" ? <StudentView onShare={() => setHelpOpen(true)} /> : role === "parent" ? <ParentView helpCardStatus={helpCardStatus} onAccept={() => setHelpCardStatus("accepted")} /> : <CaregiverView />}

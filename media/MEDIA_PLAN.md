@@ -17,7 +17,7 @@ The mark uses two continuous arcs as a bridge between student and family. They s
 | `03-parent-request.png` | Parent receives bounded request | Production |
 | `04-caregiver-pass.png` | Temporary caregiver authority | Production |
 | `05-wellbeing-accommodation.png` | Private functional accommodation | Production |
-| `06-architecture.jpg` | Technical implementation | Production |
+| `06-architecture.jpg` | Verified prototype architecture | Production |
 | Demo video | Five-minute product journey | Pending recording |
 
 ## Required video sequence

@@ -1,87 +1,40 @@
 # TenderLoop architecture
 
-## System shape
+## Implemented and verified prototype
 
-TenderLoop uses two bounded language-model roles and one deterministic caregiver experience:
+The current repository implements a bounded Student Coach flow:
 
 ```mermaid
 flowchart LR
-  UI["Next.js role experiences"] --> AUTH["Cognito identity"]
-  UI --> API["API Gateway + Lambda"]
-  API --> ROUTER["Deterministic role router"]
-  ROUTER --> STUDENT["Student Coach · Strands"]
-  ROUTER --> PARENT["Parent Guide · Strands"]
-  ROUTER --> CARE["Caregiver Pass service · no general chat agent"]
-  STUDENT --> GATE["Cedar policy + approval gate"]
-  PARENT --> GATE
-  CARE --> GATE
-  GATE --> TOOLS["Typed Lambda tools"]
-  TOOLS --> DB["DynamoDB family-scoped records"]
-  DB --> EVENTS["Outbox + EventBridge Scheduler"]
-  EVENTS --> NOTIFY["Consent re-check + notification"]
-  ROUTER --> OBS["AgentCore observability"]
-  TOOLS --> OBS
+  UI["Next.js role-based demo"] --> API["POST /api/coach"]
+  API --> VALIDATE["Zod input validation"]
+  VALIDATE --> AGENT["Strands Agents SDK"]
+  AGENT --> MODEL["Amazon Bedrock · Nova Lite"]
+  AGENT --> TOOL["build_study_plan tool"]
+  TOOL --> OUTPUT["Structured, schema-validated plan"]
+  OUTPUT --> REVIEW["Student reviews before any share"]
 ```
 
-AgentCore Runtime hosts a single Python service with separate Student Coach and Parent Guide prompts and tool allowlists. The agents never exchange free-form conversation. A child-approved, stored Help Card is the only cross-role study handoff.
+The interactive experience includes three deliberately different scopes:
 
-## Authorization contract
+- Maya receives a private planning workspace. The agent can draft a study plan, but it cannot publish a Help Card.
+- Daniel sees only the exact Help Card Maya approves and shared family schedule information.
+- Alex receives a synthetic, expiring logistics view with no access to study history or private conversation.
 
-The server resolves identity and role from a verified JWT. It never trusts a role, family identifier, or student identifier supplied in a prompt. Every mutation verifies authenticated subject, active family membership, server-resolved role, family ownership of the resource, operation scope, unexpired consent or Caregiver Pass, approval hash and object version, and an idempotency key.
+The route handler validates `assignment`, `difficulty`, and `comfort`, invokes a Strands JavaScript agent configured with an explicit Bedrock model, and accepts output only through the typed `build_study_plan` tool and final structured-output schema.
 
-The model can draft a plan, Help Card, replan, reminder, or parent response. It cannot approve its own proposal.
+Local development uses the authenticated AWS CLI provider chain with `amazon.nova-lite-v1:0` in `eu-north-1`. The Vercel deployment intentionally has no AWS credentials and therefore uses the deterministic safe-preview response. The UI labels the active mode as either **Strands agent** or **Safe preview**.
 
-## Principal tool contracts
+## Current privacy boundary
 
-Student tools: `get_student_day`, `draft_study_plan`, `approve_study_plan`, `mark_session_status`, `replan_missed_session`, `draft_help_card`, `publish_help_card`, `propose_reminder`, `approve_reminder`, and `save_preference_card`.
+- Synthetic family, assignment, schedule, and caregiver data only.
+- No login, durable database, analytics, or private conversation persistence.
+- Help Card text is previewed verbatim before the simulated share action.
+- Role changes alter only client-side demo state.
+- The agent has one narrow tool and no capability to message, schedule, purchase, or mutate an external system.
 
-Parent tools: `get_shared_family_view` and `respond_to_help_card`.
+## Production hardening roadmap — not implemented in this prototype
 
-Caregiver tools: `get_caregiver_day`, `acknowledge_handoff`, `report_exception`, and `request_parent_decision`.
+A production TenderLoop would add verified identity and family membership, deterministic authorization, durable consent receipts, audited idempotent tools, encrypted family-scoped storage, revocable caregiver passes, and reviewed safety escalation. Candidate AWS services include Cognito, API Gateway, Lambda, Cedar/Verified Permissions, DynamoDB, EventBridge, Bedrock Guardrails, CloudWatch, and AgentCore.
 
-All mutating requests include `request_id`, `idempotency_key`, and `expected_version`. Consequential tools write the state change, approval receipt, audit metadata, and outbox event atomically.
-
-## Data and memory
-
-A DynamoDB single table uses family-scoped partition keys and records for Family, Membership, Assignment, Plan, StudySession, HelpCard, PreferenceCard, Approval, Reminder, CaregiverPass, AuditEvent, and IdempotencyResult. Reverse membership and hashed invite lookup use secondary indexes.
-
-Raw student chats are ephemeral. AgentCore Memory is short-term only for minor conversations. A durable PreferenceCard is created only after an explicit, child-visible save action and remains editable and deletable.
-
-Health diagnoses and symptom narratives are not agent memory. The preferred data object is a narrow `AccommodationPreference` containing a functional adjustment, audience, purpose, provenance, consent receipt, expiry, and retention rule. Appointment blocks may be stored as unavailable time with a neutral label. Any optional health detail is isolated from ordinary study records, encrypted, excluded from model memory and analytics, and never copied into a caregiver view unless the student and authorized adult explicitly approve a necessary safety instruction.
-
-## Caregiver Pass
-
-The pass begins as a 256-bit opaque single-use invite. Only its hash is stored. After authentication it binds to one subject, family, student, time window, and narrow scope. The default duration is 24 hours and the maximum is seven days. It is visible to the student and parent, revocable, non-transferable, and cannot extend itself.
-
-## Safety layers
-
-- deterministic input and action policy;
-- Amazon Bedrock Guardrails;
-- PII masking or blocking on model input and output;
-- academic-integrity checker;
-- typed Pydantic schemas;
-- Cedar authorization;
-- Lambda-side reauthorization;
-- output validation and audit metadata;
-- specialist-reviewed crisis and trusted-adult handoff policy.
-
-Health-related requests pass through a deterministic boundary classifier before agent generation. The permitted path is plan accommodation or human handoff. Diagnosis, symptom interpretation, medication advice, and treatment recommendations are denied. Urgent language invokes a disclosed, jurisdiction-specific safety flow that offers immediate human help while revealing only the minimum necessary information under the reviewed escalation policy.
-
-Guardrails do not replace authorization and cannot be assumed to inspect every tool argument.
-
-## Repository evolution
-
-The hackathon starts with a Next.js demonstration at the repository root. The production-oriented shape will grow into:
-
-```text
-src/                    Next.js experience and local adapters
-services/agent/         Python Strands + AgentCore runtime
-services/tools/         typed Lambda tool implementations
-packages/contracts/     shared schemas and generated clients
-infra/                  AWS CDK stacks and Cedar policies
-tests/e2e/              family journey tests
-tests/redteam/          privacy, role, injection, and safety tests
-agentcore/               runtime configuration
-```
-
-Local mode uses synthetic assignments and the Maya/Daniel/Alex family profile. No real child, school, health, or location data is required for the demonstration.
+These services are architectural direction only. They are not claimed as part of the submitted implementation or **Built With** list.

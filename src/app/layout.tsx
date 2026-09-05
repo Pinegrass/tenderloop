@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   title: "TenderLoop — From nagging to navigating",
   description:
     "A caring family coordination agent that helps students study and families show up without surveillance.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#f9f6f0",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

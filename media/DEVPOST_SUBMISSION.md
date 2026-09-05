@@ -126,7 +126,7 @@ Do not add AgentCore, Cognito, Lambda, API Gateway, DynamoDB, EventBridge, or Ce
 4. `Daniel receives one concrete Help Card, without Maya’s transcript, mood score, or private preferences.`
 5. `Alex gets logistics-only access for today’s handoff, with automatic expiry at 9 PM.`
 6. `Private comfort settings adapt pacing and screen load without diagnosis or wellbeing surveillance.`
-7. `Strands and Bedrock draft plans; deterministic policy and explicit approval govern shared actions.`
+7. `Strands and Nova Lite call one bounded planning tool; validation and explicit approval keep output review-only.`
 
 ## Additional Info recommendations
 
