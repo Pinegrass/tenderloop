@@ -5,7 +5,10 @@
       "Sid": "InvokeOnlyTenderLoopRuntime",
       "Effect": "Allow",
       "Action": "bedrock-agentcore:InvokeAgentRuntime",
-      "Resource": "arn:aws:bedrock-agentcore:REGION:ACCOUNT_ID:runtime/TenderLoopStudentCoach-*"
+      "Resource": [
+        "arn:aws:bedrock-agentcore:REGION:ACCOUNT_ID:runtime/TenderLoopStudentCoach-*",
+        "arn:aws:bedrock-agentcore:REGION:ACCOUNT_ID:runtime/TenderLoopStudentCoach-*/runtime-endpoint/DEFAULT"
+      ]
     },
     {
       "Sid": "DenyCallerSuppliedUserDelegation",
