@@ -35,9 +35,11 @@ Then open `http://localhost:3000`.
 
 Public demo: <https://tenderloop-two.vercel.app>
 
-The public demo intentionally runs in clearly labelled deterministic-preview mode
-until a least-privilege Vercel-to-AWS credential path is configured. The repository's
-real Strands/Nova Lite path has been verified locally against Amazon Bedrock.
+The public demo supports a production AgentCore path authenticated with short-lived
+Vercel OIDC credentials. Until the runtime ARN and least-privilege invocation role
+are configured, it runs in clearly labelled deterministic-preview mode. The
+repository's real Strands/Nova Lite path has been verified locally against Amazon
+Bedrock, and Safe Preview remains the explicit reliability fallback.
 
 To run the real Strands path, configure one of the credential methods supported by
 Amazon Bedrock, for example `AWS_BEARER_TOKEN_BEDROCK`, or standard AWS access-key
@@ -63,10 +65,11 @@ cross-Region inference profile.
 
 ## AWS roadmap
 
-The Strands Student Coach is implemented locally. The next deployment milestone is
-to host the agent through Amazon Bedrock AgentCore Runtime and add authenticated role
-boundaries, durable shared objects, scheduling, and observability. The language model
-proposes; deterministic policy and explicit human approval govern consequential actions.
+The Strands Student Coach and its AgentCore Runtime adapter are implemented. See
+[`agentcore-runtime/DEPLOYMENT.md`](agentcore-runtime/DEPLOYMENT.md) for the
+least-privilege deployment and Vercel OIDC integration runbook. The language model
+proposes; deterministic policy and explicit human approval govern consequential
+actions.
 
 All demo data is synthetic. TenderLoop is an AI support tool—not a parent, therapist, diagnostician, or disciplinarian.
 

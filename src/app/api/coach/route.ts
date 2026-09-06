@@ -1,4 +1,5 @@
-import { CoachRequestSchema, runStudentCoach } from "@/lib/tenderloop-agent";
+import { CoachRequestSchema } from "@/lib/coach-contract";
+import { runStudentCoach } from "@/lib/tenderloop-agent";
 
 export const runtime = "nodejs";
 

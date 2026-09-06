@@ -1,0 +1,22 @@
+{
+  "name": "tenderloop-agentcore-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "esbuild src/app.ts --bundle --platform=node --target=node22 --format=cjs --outfile=dist/app.js",
+    "start": "node dist/app.js",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@strands-agents/sdk": "^1.13.0",
+    "express": "^5.1.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.18.1",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.9.2"
+  }
+}

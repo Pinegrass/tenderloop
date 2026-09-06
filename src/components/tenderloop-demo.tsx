@@ -37,12 +37,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  canParentViewHelpCard,
+  sharedDecisionSummary,
+  type HelpCardStatus,
+} from "@/lib/consent-boundary";
 
 type Role = "student" | "parent" | "caregiver";
 type AppSection = "today" | "family" | "activity" | "settings";
 type Difficulty = "starting" | "understanding" | "finding-time";
-type HelpCardStatus = "private" | "sent" | "accepted";
-type CoachEngine = "preview" | "strands";
+type CoachEngine = "preview" | "strands" | "agentcore";
 
 type CoachPlan = {
   acknowledgement: string;
@@ -188,7 +192,13 @@ function StudentView({
       if (!response.ok) throw new Error(data.error ?? "The coach could not create a plan.");
 
       setCoachPlan(data.plan);
-      onCoachEngineChange(data.engine === "strands" ? "strands" : "preview");
+      onCoachEngineChange(
+        data.engine === "strands-agentcore"
+          ? "agentcore"
+          : data.engine === "strands"
+            ? "strands"
+            : "preview",
+      );
     } catch (error) {
       setCoachError(error instanceof Error ? error.message : "The coach could not create a plan.");
     } finally {
@@ -222,7 +232,7 @@ function StudentView({
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="font-semibold">What feels hardest right now?</p>
                     <Badge variant="outline" className="rounded-full bg-white text-[11px]">
-                      {coachEngine === "strands" ? "Strands agent" : "Safe preview"}
+                      {coachEngine === "agentcore" ? "Strands · AgentCore" : coachEngine === "strands" ? "Strands agent" : "Safe preview"}
                     </Badge>
                   </div>
                   <p className="mt-1 text-sm leading-6 text-muted-foreground">Starting, understanding the research, or finding time?</p>
@@ -370,7 +380,7 @@ function StudentView({
 }
 
 function ParentView({ helpCardStatus, onAccept }: { helpCardStatus: HelpCardStatus; onAccept: () => void }) {
-  if (helpCardStatus === "private") {
+  if (!canParentViewHelpCard(helpCardStatus)) {
     return (
       <div className="grid gap-5 lg:grid-cols-[1.15fr_.85fr]">
         <Card className="paper-shadow border-0">
@@ -650,8 +660,8 @@ function SettingsView({ coachEngine, onReset }: { coachEngine: CoachEngine; onRe
         <Card className="border-[#cbd9df] bg-[#f5fafc]">
           <CardHeader><CardTitle className="flex items-center gap-2 text-base"><Bot className="size-5 text-[#385d6c]" /> Agent runtime</CardTitle></CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <div className="flex items-center justify-between gap-3"><span>Last plan engine</span><Badge variant="outline" className="rounded-full bg-white">{coachEngine === "strands" ? "Strands agent" : "Safe preview"}</Badge></div>
-            <p className="leading-6 text-muted-foreground">The local demo uses the Strands Agents SDK with Amazon Nova Lite when AWS credentials are available. Safe Preview keeps the public experience reliable.</p>
+            <div className="flex items-center justify-between gap-3"><span>Last plan engine</span><Badge variant="outline" className="rounded-full bg-white">{coachEngine === "agentcore" ? "Strands · AgentCore" : coachEngine === "strands" ? "Strands agent" : "Safe preview"}</Badge></div>
+            <p className="leading-6 text-muted-foreground">TenderLoop can run its bounded Strands agent on Amazon Bedrock AgentCore with Nova Lite. Safe Preview remains the reliability fallback and never pretends an LLM ran.</p>
           </CardContent>
         </Card>
         <Card>
@@ -716,11 +726,7 @@ export function TenderLoopDemo() {
   const [helpCardStatus, setHelpCardStatus] = useState<HelpCardStatus>("private");
   const [coachEngine, setCoachEngine] = useState<CoachEngine>("preview");
   const copy = roleCopy[role];
-  const activityCopy = helpCardStatus === "accepted"
-    ? "Daniel confirmed Maya’s approved Help Card for 7:30 PM. No private chat was shared."
-    : helpCardStatus === "sent"
-      ? "Maya shared one approved Help Card with Daniel. Her study conversation remains private."
-      : "Drafted a plan from Maya’s assignment and family calendar. No action taken without approval.";
+  const activityCopy = sharedDecisionSummary(helpCardStatus);
   const scope = roleScope[role];
 
   function navigate(section: AppSection) {
