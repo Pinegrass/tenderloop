@@ -66,7 +66,7 @@ const buildStudyPlan = tool({
 
 const model = new BedrockModel({
   region: process.env.AWS_REGION ?? "ap-south-1",
-  modelId: process.env.BEDROCK_MODEL_ID ?? "amazon.nova-lite-v1:0",
+  modelId: process.env.BEDROCK_MODEL_ID ?? "apac.amazon.nova-lite-v1:0",
   maxTokens: 700,
   temperature: 0.2,
 });

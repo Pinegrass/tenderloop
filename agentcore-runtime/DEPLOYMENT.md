@@ -18,7 +18,8 @@ least-privilege IAM or IAM Identity Center principal—not the AWS account root.
 - Entry point: `dist/app.js`
 - Protocol: `HTTP`
 - Network mode: `PUBLIC` for the hackathon demo
-- Model: Amazon Nova Lite
+- Model: Amazon Nova Lite through the geography-bound APAC inference profile
+  (`apac.amazon.nova-lite-v1:0`)
 - Region: `ap-south-1` (Mumbai), which supports AgentCore Runtime and Amazon Nova Lite
 
 ## Required safety gate

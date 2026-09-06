@@ -51,11 +51,12 @@ not expose credential environment variables, set `TENDERLOOP_USE_BEDROCK=true` t
 enable the live agent explicitly. The AWS SDK then resolves the temporary credentials
 through its normal server-side provider chain.
 
-TenderLoop pins the Bedrock provider to Amazon Nova Lite in Stockholm by default,
+TenderLoop pins the Bedrock provider to Amazon Nova Lite in Mumbai by default,
 avoiding an implicit dependency on an Anthropic model that may not be enabled for
-the account. Override it server-side with `AWS_REGION` and `BEDROCK_MODEL_ID` when
-needed; for example, `BEDROCK_MODEL_ID=eu.amazon.nova-lite-v1:0` uses the EU
-cross-Region inference profile.
+the account. The deployment uses `BEDROCK_MODEL_ID=apac.amazon.nova-lite-v1:0`
+for the geography-bound APAC inference profile because direct on-demand throughput
+is unavailable there. Override `AWS_REGION` and `BEDROCK_MODEL_ID` together when
+moving geographies; for example, the EU profile is `eu.amazon.nova-lite-v1:0`.
 
 ## Product and engineering docs
 

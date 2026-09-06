@@ -2,15 +2,36 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "InvokeNovaLite",
+      "Sid": "InvokeNovaLiteInferenceProfile",
       "Effect": "Allow",
       "Action": [
         "bedrock:InvokeModel",
         "bedrock:InvokeModelWithResponseStream"
       ],
       "Resource": [
-        "arn:aws:bedrock:REGION::foundation-model/amazon.nova-lite-v1:0"
+        "arn:aws:bedrock:REGION:ACCOUNT_ID:inference-profile/apac.amazon.nova-lite-v1:0"
       ]
+    },
+    {
+      "Sid": "InvokeNovaLiteAcrossApac",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream"
+      ],
+      "Resource": [
+        "arn:aws:bedrock:ap-south-1::foundation-model/amazon.nova-lite-v1:0",
+        "arn:aws:bedrock:ap-southeast-2::foundation-model/amazon.nova-lite-v1:0",
+        "arn:aws:bedrock:ap-northeast-1::foundation-model/amazon.nova-lite-v1:0",
+        "arn:aws:bedrock:ap-northeast-2::foundation-model/amazon.nova-lite-v1:0",
+        "arn:aws:bedrock:ap-southeast-1::foundation-model/amazon.nova-lite-v1:0",
+        "arn:aws:bedrock:ap-northeast-3::foundation-model/amazon.nova-lite-v1:0"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "bedrock:InferenceProfileArn": "arn:aws:bedrock:REGION:ACCOUNT_ID:inference-profile/apac.amazon.nova-lite-v1:0"
+        }
+      }
     },
     {
       "Sid": "RuntimeLogs",
